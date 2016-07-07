@@ -1,4 +1,4 @@
-// DZ_TUI.cpp : Defines the entry point for the console application.
+// тут усі базові класи,окрім класу гри
 //
 
 #include "all_includes.h"
