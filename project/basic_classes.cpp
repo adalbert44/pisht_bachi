@@ -123,5 +123,4 @@ enum players_regime
     PLAYER_COMPUTER
 };
 
-pair<int,int> moves[6] = {{-1,0}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1} };
 
