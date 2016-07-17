@@ -33,7 +33,7 @@
 
 using namespace std;
 
-typedef string Sprite;
+typedef string Sprite; // TODO: реалізувати класс картинки !!!
 typedef vector<int> vi;
 typedef pair <int, int> pii;
 typedef vector<pii> vii;
