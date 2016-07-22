@@ -22,6 +22,10 @@
 #define mp make_pair
 #define fi first
 #define se second
+
+#define x first
+#define y second
+
 #define I "%d"
 #define II "%d%d"
 #define III "%d%d%d"
