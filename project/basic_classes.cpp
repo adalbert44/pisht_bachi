@@ -39,7 +39,7 @@ class Town
 public:
 	int x, y, color;
 	Sprite sprite;
-	
+
 	// конструктор міста від координат клітинки та кольору нації
 	Town(int x, int y, int color)
 	{
@@ -105,7 +105,7 @@ public:
 	Fort *fort;
 	Town *town;
 	// TODO: тип клітинки: гори, рівнини, моря !!!
-	
+
 	// автоматичний конструктор пустої клітинки
 	Cell()
 	{
@@ -114,13 +114,6 @@ public:
         this->fort = NULL;
         this->town = NULL;
 	}
-};
-
-enum players_regime
-{
-    READ_FROM_FILE,
-    PLAYER_PLAYER,
-    PLAYER_COMPUTER
 };
 
 
