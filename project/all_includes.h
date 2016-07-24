@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <set>
+#include <queue>
+#include <stack>
 #include <map>
 #include <algorithm>
 #include <random>
@@ -18,14 +20,13 @@
 #include <time.h>
 #include <ctime>
 
+#define INF 1e9
 #define pb push_back
 #define mp make_pair
 #define fi first
 #define se second
-
 #define x first
 #define y second
-
 #define I "%d"
 #define II "%d%d"
 #define III "%d%d%d"
@@ -50,6 +51,5 @@ template <typename type> inline type sqr(type x)
 {
 	return x*x;
 }
-
 
 // TODO: reference additional headers your program requires here
