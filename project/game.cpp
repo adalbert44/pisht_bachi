@@ -9,6 +9,9 @@ enum players_regime
 
 ///pattern game class
 
+queue < pii > q;
+int dist[100][100];
+bool vis [100][100];
 
 class FirstRegimeGame
 {
@@ -17,7 +20,7 @@ public:
     int N, M;
 	Cell field[100][100];
 
-	vector< pii > turns[100][100];
+	vector < pii > turns[100][100];
 
     ///блок процедур для генерації переходів
 
@@ -111,6 +114,90 @@ public:
         this->generateTurns();
 	}
 
+
+    /// SART INTELECT METHODS
+
+    // ОЧИСТКА МАСИВУ ДИСТАНЦІЙ
+    void clrDist()
+    {
+        for (int i(0); i < 100; i++)
+            for (int j(0); j < 100; j++)
+                dist[i][j] = INF;
+    }
+
+    void clrVisit()
+    {
+        for (int i(0); i<100; i++)
+            for (int j(0); j<100; j++)
+                vis[i][j] = false;
+    }
+
+    int priority(int x, int y)
+    {
+        Cell c = this->field[x][y];
+        int priorityEmpty = 5;
+        int priorityFull = 10;
+        if(c.relief == EMPTY && c.town == NULL && c.fort == NULL)
+            return priorityEmpty; else return priorityFull;
+    }
+
+    void clrQ()
+    {
+        while(!q.empty())
+        {
+            q.pop();
+        }
+    }
+
+    // ПІДРАХОВУЕМО ВІДСТАНЬ ДО ВЕРШИН
+
+    void bfs(int x, int y)
+    {
+        pii s = mp(x, y);
+        clrQ();
+        q.push(s);
+        clrDist();
+        dist[s.x][s.y] = 0;
+        while(!q.empty())
+        {
+            pii v = q.front();
+            for(auto to : turns[v.x][v.y])
+            {
+                if(dist[to.x][to.y] > dist[v.x][v.y] + 1)
+                {
+                    q.push(to);
+                    dist[to.x][to.y] = dist[v.x][v.y] + 1;
+                }
+            }
+            q.pop();
+        }
+    }
+
+    // ПІДРАХУНОК ПОТЕНЦІАЛІВ
+    double dfs(int x, int y)
+    {
+        pii v = mp(x, y);
+        vis[v.x][v.y] = true;
+        double total = priority(v.x, v.y);
+        for (auto to : turns[v.x][v.y])
+        {
+            if(!vis[to.x][to.y] && dist[to.x][to.y] == dist[v.x][v.y] + 1)
+                total += dfs(to.x, to.y);
+        }
+        return total / ( (double)dist[x][y] );
+    }
+
+    /*
+    */
+    double getRank(int x,int y)
+    {
+        bfs(x,y);
+        clrVisit();
+        return dfs(x,y);
+    }
+
+    /// FINISH INTELECT METHODS
+
     ///this is empty methods
 	void playFromFile() {}
     void playPlayerPlayer() {}
@@ -139,6 +226,8 @@ public:
         }
 	}
 };
+
+
 
 int main()
 {
