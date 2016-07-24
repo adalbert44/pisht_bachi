@@ -97,6 +97,14 @@ public:
 };
 
 /// клас клітинки
+
+enum Relief
+{
+    EMPTY,
+    RIVER,
+    MOUNTAIN
+};
+
 class Cell
 {
 public:
@@ -104,7 +112,8 @@ public:
 	General *general;
 	Fort *fort;
 	Town *town;
-	// TODO: тип клітинки: гори, рівнини, моря !!!
+	Relief relief;
+
 
 	// автоматичний конструктор пустої клітинки
 	Cell()
@@ -113,6 +122,7 @@ public:
 	    this->general = NULL;
         this->fort = NULL;
         this->town = NULL;
+        this->relief = EMPTY;
 	}
 };
 
