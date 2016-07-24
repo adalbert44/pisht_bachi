@@ -198,11 +198,11 @@ public:
 
     /// FINISH INTELECT METHODS
 
-    ///this is empty methods
+    ///TODO : дописати методи гри
 	void playFromFile() {}
     void playPlayerPlayer() {}
     void playPlayerComputer() {}
-    /// end empty methods
+    ///
 
 	void play()
 	{
