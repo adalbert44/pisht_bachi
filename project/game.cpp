@@ -135,6 +135,8 @@ public:
     int priority(int x, int y)
     {
         Cell c = this->field[x][y];
+        if(c.town!=NULL)
+            return 0;
         int priorityEmpty = 5;
         int priorityFull = 10;
         if(c.relief == EMPTY && c.town == NULL && c.fort == NULL)
@@ -184,7 +186,9 @@ public:
             if(!vis[to.x][to.y] && dist[to.x][to.y] == dist[v.x][v.y] + 1)
                 total += dfs(to.x, to.y);
         }
-        return total / ( (double)dist[x][y] );
+        if(dist[x][y]!=0)
+            return total / ( (double)dist[x][y] );
+        else return total;
     }
 
     /*
@@ -198,11 +202,11 @@ public:
 
     /// FINISH INTELECT METHODS
 
-    ///TODO : дописати методи гри
+    ///TODO : дописати процедури гри
 	void playFromFile() {}
     void playPlayerPlayer() {}
     void playPlayerComputer() {}
-    ///
+    /// end empty methods
 
 	void play()
 	{
@@ -226,20 +230,3 @@ public:
         }
 	}
 };
-
-
-
-int main()
-{
-	srand(unsigned(time(NULL)));
-	printf("Hello world\n");
-
-	Town *town1 = new Town(1, 1, 1);
-	Town *town2 = new Town(2, 2, 2);
-	FirstRegimeGame game1 = FirstRegimeGame(READ_FROM_FILE,10,10, town1, town2);
-	game1.setFort(new Fort(1,2,1));
-	game1.play();
-
-	system("pause");
-    return 0;
-}
