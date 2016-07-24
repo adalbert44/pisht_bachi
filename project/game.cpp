@@ -109,9 +109,10 @@ public:
         this->N = width;
         this->M = height;
 
+        this->generateTurns();
+
         this->setTown(town1);
         this->setTown(town2);
-        this->generateTurns();
 	}
 
 
@@ -124,7 +125,7 @@ public:
             for (int j(0); j < 100; j++)
                 dist[i][j] = INF;
     }
-
+    // ОЧИСТКА МАСИВУ ВІДВІДАНИХ ВЕРШИН
     void clrVisit()
     {
         for (int i(0); i<100; i++)
@@ -132,17 +133,7 @@ public:
                 vis[i][j] = false;
     }
 
-    int priority(int x, int y)
-    {
-        Cell c = this->field[x][y];
-        if(c.town!=NULL)
-            return 0;
-        int priorityEmpty = 5;
-        int priorityFull = 10;
-        if(c.relief == EMPTY && c.town == NULL && c.fort == NULL)
-            return priorityEmpty; else return priorityFull;
-    }
-
+    // ОЧИСТКА ЧЕРГИ
     void clrQ()
     {
         while(!q.empty())
@@ -151,8 +142,44 @@ public:
         }
     }
 
-    // ПІДРАХОВУЕМО ВІДСТАНЬ ДО ВЕРШИН
+    bool isEmpty(Cell c)
+    {
+         if(c.town!=NULL||c.fort!=NULL||c.relief!=EMPTY)
+            return false;
+         return true;
+    }
 
+    bool canGo(int x, int y, int color)
+    {
+        if(this->field[x][y].color == color)
+            return true;
+        for (auto to : turns[x][y])
+            if(this->field[to.x][to.y].color == color)
+                return true;
+        return false;
+    }
+
+    // ПІДРАХУНОК ПРІОРИТЕТУ КЛІТИНКИ
+    int priority(int x, int y, int color)
+    {
+        Cell c = this->field[x][y];
+        if(!isEmpty(c))
+            return 0;
+        int priorityEmpty = 5;
+        int priorityFull = 10;
+        int penalty = -3;
+        int total = 0;
+        for (auto to : turns[x][y])
+        {
+            Cell v = this->field[to.x][to.y];
+            if(!isEmpty(v))
+                total += priorityFull + (penalty*(color == v.color));
+            else total += priorityEmpty + (penalty*(color == v.color));
+        }
+        return total;
+    }
+
+    // ПІДРАХОВУЕМО ВІДСТАНЬ ДО ВЕРШИН
     void bfs(int x, int y)
     {
         pii s = mp(x, y);
@@ -163,28 +190,31 @@ public:
         while(!q.empty())
         {
             pii v = q.front();
-            for(auto to : turns[v.x][v.y])
-            {
-                if(dist[to.x][to.y] > dist[v.x][v.y] + 1)
+            if(isEmpty(this->field[v.x][v.y]))
+                for(auto to : turns[v.x][v.y])
                 {
-                    q.push(to);
-                    dist[to.x][to.y] = dist[v.x][v.y] + 1;
+                    if(dist[to.x][to.y] > dist[v.x][v.y] + 1)
+                    {
+                        q.push(to);
+                        dist[to.x][to.y] = dist[v.x][v.y] + 1;
+                    }
                 }
-            }
             q.pop();
         }
     }
 
     // ПІДРАХУНОК ПОТЕНЦІАЛІВ
-    double dfs(int x, int y)
+    double dfs(int x, int y, int color)
     {
         pii v = mp(x, y);
+        if(!isEmpty(this->field[v.x][v.y]))
+            return 0;
         vis[v.x][v.y] = true;
-        double total = priority(v.x, v.y);
+        double total = priority(v.x, v.y ,color);
         for (auto to : turns[v.x][v.y])
         {
             if(!vis[to.x][to.y] && dist[to.x][to.y] == dist[v.x][v.y] + 1)
-                total += dfs(to.x, to.y);
+                total += dfs(to.x, to.y, color);
         }
         if(dist[x][y]!=0)
             return total / ( (double)dist[x][y] );
@@ -192,12 +222,26 @@ public:
     }
 
     /*
+    ОСКІЛЬКИ ПЕРЕД ПІДРАХУНКОМ ПОТЕНЦІАЛУ НАМ ПОТРІБНО ОБРАХУВАТИ ВІДСТАНІ,
+    МИ ЗАПУСКАЕМО БФС І ОБРАХОВУЕМО ПОТЕНЦІАЛ КЛІТИНКИ
     */
-    double getRank(int x,int y)
+    double getRank(int x,int y, int color)
     {
         bfs(x,y);
         clrVisit();
-        return dfs(x,y);
+        return dfs(x, y, color);
+    }
+
+    pii getBestCell(int color)
+    {
+        vector < pair < double, pii > > Ranks;
+        for (int i(1);i<=this->N;i++)
+            for (int j(1);j<=this->M;j++)
+                if(canGo(i,j,color))
+                    Ranks.pb(mp(getRank(i,j,color), mp(i,j)));
+
+        sort(Ranks.begin(),Ranks.end());
+        return Ranks.back().second;
     }
 
     /// FINISH INTELECT METHODS
