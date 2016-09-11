@@ -1,5 +1,7 @@
 #include "basic_classes.cpp"
 
+#define FILENAME "file_with_turns"
+
 enum players_regime
 {
     READ_FROM_FILE,
@@ -19,6 +21,7 @@ public:
     players_regime players;
     int N, M;
 	Cell field[100][100];
+	int current_player;///позначає номер гравця, який тепер ходить(1 або 2)
 
 	vector < pii > turns[100][100];
 
@@ -80,20 +83,30 @@ public:
     ///set methods
     void setColorAround(int x, int y, int color)
     {
-        this->field[x][y].color = color;
+        if(this->field[x][y].town == nullptr) this->field[x][y].color = color;
         for(auto turn : turns[x][y])
-            this->field[turn.x][turn.y].color = color;
+            if(this->field[turn.x][turn.y].town == nullptr)
+                this->field[turn.x][turn.y].color = color;
     }
 
-    void setTown(Town *town)
+    bool setTown(Town *town)
     {
-        this->field[town->x][town->y].town = town;
+        if(this->field[town->x][town->y].town != nullptr) return false;
+
         this->setColorAround(town->x, town->y, town->color);
+        this->field[town->x][town->y].town = town;
+
+        return true;
     }
-    void setFort(Fort *fort)
+
+    bool setFort(Fort *fort)
     {
+        if(this->field[fort->x][fort->y].fort != nullptr) return false;
+
         this->field[fort->x][fort->y].fort = fort;
         this->setColorAround(fort->x, fort->y, fort->color);
+
+        return true;
     }
     void setGeneral(General *general)
     {
@@ -101,13 +114,16 @@ public:
     }
     ///end set methods
 
-    ///constructor
+    ///constructors
+	FirstRegimeGame() {}
 	FirstRegimeGame(players_regime players,int width, int height, Town *town1, Town *town2)
 	{
         this->players = players;
 
         this->N = width;
         this->M = height;
+
+        this->current_player = 1;
 
         this->generateTurns();
 
@@ -116,7 +132,7 @@ public:
 	}
 
 
-    /// SART INTELECT METHODS
+    /// START INTELECT METHODS
 
     // ОЧИСТКА МАСИВУ ДИСТАНЦІЙ
     void clrDist()
@@ -151,6 +167,10 @@ public:
 
     bool canGo(int x, int y, int color)
     {
+        if(this->field[x][y].fort != nullptr) return false;
+        if(this->field[x][y].town != nullptr) return false;
+        if(this->field[x][y].relief != EMPTY) return false;
+
         if(this->field[x][y].color == color)
             return true;
         for (auto to : turns[x][y])
@@ -240,37 +260,80 @@ public:
                 if(canGo(i,j,color))
                     Ranks.pb(mp(getRank(i,j,color), mp(i,j)));
 
-        sort(Ranks.begin(),Ranks.end());
-        return Ranks.back().second;
+        return max_element(Ranks.begin(), Ranks.end()) -> second;
     }
 
     /// FINISH INTELECT METHODS
 
     ///TODO : дописати процедури гри
-	void playFromFile() {}
-    void playPlayerPlayer() {}
-    void playPlayerComputer() {}
+
+	void goFromFile()
+	{
+
+        int x, y;
+        cin >> x >> y;
+
+        this->setFort(new Fort(x, y, current_player));
+        this->current_player = 3 - this->current_player;
+	}
+
+    void goPlayerPlayer()
+    {
+
+        this->current_player = 3 - current_player;
+    }
+
+    void goPlayerComputer()
+    {
+        int x, y, iterations;
+        do
+        {
+            if(iterations > 0) cout << "Incorrect turn! Try again\n";
+            cin >> x >> y;
+            iterations++;
+        }
+        while(!canGo(x, y, current_player) || !this->setFort(new Fort(x, y, current_player)));
+
+        this->current_player = 3 - current_player;
+
+        pii computer_going = this->getBestCell(current_player);
+
+        this->setFort(new Fort(computer_going.x, computer_going.y, current_player));
+        this->current_player = 3 - this->current_player;
+    }
     /// end empty methods
 
-	void play()
+	void go()
 	{
         switch(players)
         {
             case READ_FROM_FILE :
             {
-                this->playFromFile();
+                this->goFromFile();
                 break;
             }
             case PLAYER_PLAYER :
             {
-                this->playPlayerPlayer();
+                this->goPlayerPlayer();
                 break;
             }
             case PLAYER_COMPUTER :
             {
-                this->playPlayerComputer();
+                this->goPlayerComputer();
                 break;
             }
         }
+	}
+
+	int get_current_winner()
+	{
+        int score1 = 0, score2 = 0;
+        for(int i = 1; i <= this->N; i++)
+            for(int j = 1; j <= this->M; j++)
+                if(this->field[i][j].color == 1)
+                    score1++;
+                else
+                    score2++;
+        return (score1 > score2 ? 1 :(score1 < score2 ? 2 : 0));
 	}
 };
