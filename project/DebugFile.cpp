@@ -1,12 +1,11 @@
 #include "game.cpp"
 #include <bits/stdc++.h>
-#define N 10
-#define M 10
 
+int N, M, Mode, Turns;
+pair<int, int> a, b;
 
-Town *town1 = new Town(1, 1, 1);
-Town *town2 = new Town(3, 3, 2);
-FirstRegimeGame game1 = FirstRegimeGame(READ_FROM_FILE,10,10, town1, town2);
+Town *town1, *town2;
+FirstRegimeGame game1;
 
 
 void writeRank(int color)
@@ -46,21 +45,72 @@ void writeBestCell(int color)
     cout << "\n";
 }
 
+string WhoWin()
+{
+    int winner = game1.get_current_winner();
+    if(winner == 1)
+        return "First player win!";
+    else if(winner == 2)
+        return "Second player win";
+    else
+        return "Nobody wins! It's draw!";
+}
+
+void playFromFile()
+{
+    freopen(FILENAME".txt","r", stdin);
+    cin >> N >> M >> Mode >> a.x >> a.y >> b.x >> b.y;
+
+    town1 = new Town(a.x, a.y, 1);
+    town2 = new Town(b.x, b.y, 2);
+    game1 = FirstRegimeGame(READ_FROM_FILE, N, M, town1, town2);
+
+    cin >> Turns;
+    for(int i = 1; i <= 2 * Turns; i++)
+    {
+        game1.go();
+        cout << "Turn number " << i << endl;
+        writeColor();
+        cout << endl;
+    }
+
+    cout << WhoWin() << "\n";
+}
+
+void playWithComputer()
+{
+    cin >> N >> M >> Mode >> a.x >> a.y >> b.x >> b.y;
+
+    town1 = new Town(a.x, a.y, 1);
+    town2 = new Town(b.x, b.y, 2);
+    game1 = FirstRegimeGame(PLAYER_COMPUTER, N, M, town1, town2);
+
+    cin >> Turns;
+    writeColor();
+    cout << endl;
+    for(int i = 1; i <= Turns; i++)
+    {
+        game1.go();
+        cout << "Turn number " << i << endl;
+        writeColor();
+        cout << endl;
+    }
+
+    cout << WhoWin() << "\n";
+
+}
+
 int main()
 {
 	srand(unsigned(time(NULL)));
+    cout << "Select mode(1 - FROM_FILE, 2 - WITH COMPUTER) : ";
+    int regime;
+    cin >> regime;
+    if(regime == 1)
+        playFromFile();
+    else
+        playWithComputer();
 
-    writeRank(1);
-    cout << "\n";
-    writeRank(2);
-    cout << "\n";
-    writeColor();
-    cout << "\n";
-    writeBestCell(1);
-    cout << "\n";
-    writeBestCell(2);
-    cout << "\n";
-	writeDist();
 
 	system("pause");
     return 0;
