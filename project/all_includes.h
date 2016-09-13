@@ -30,7 +30,6 @@
     typedef long long ll;
     typedef unsigned long long ull;
     typedef long double ld;
-    typedef GLuint Relief;
 
     const ld PI = acos(-1.0);
 
