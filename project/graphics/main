@@ -1,0 +1,84 @@
+#include "all_includes.h"
+
+int width, height;
+
+void Reshape(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    width = w;
+    height = h;
+    glLoadIdentity();
+    glOrtho(0.0, width, height, 0.0, 0.f, -1.f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void drawHex(ld cx, ld cy, ld r)
+{
+    glBegin(GL_POLYGON);
+        glColor3f(0.1,0.5,0.1);
+        glVertex2f(r/2 + cx, -r * cos(PI/6) + cy);
+        glVertex2f(cx + r, cy);
+        glVertex2f(r/2 + cx, +r * cos(PI/6) + cy);
+        glVertex2f(-r/2 + cx, +r * cos(PI/6) + cy);
+        glVertex2f(cx - r, cy);
+        glVertex2f(-r/2 + cx, -r * cos(PI/6) + cy);
+    glEnd();
+    glLineWidth(5);
+    glBegin(GL_LINES);
+        glColor3f(0,0,0);
+        glVertex2f(r/2 + cx + 1, -1 -r * cos(PI/6) + cy);
+        glVertex2f(cx + r + 1, cy);
+        glVertex2f(cx + r + 1, cy);
+        glVertex2f(r/2 + cx + 1, 1 +r * cos(PI/6) + cy);
+        glVertex2f(r/2 + cx + 1, 1 +r * cos(PI/6) + cy);
+        glVertex2f(-1 -r/2 + cx, 1 + r * cos(PI/6) + cy);
+        glVertex2f(-1 -r/2 + cx, 1 + r * cos(PI/6) + cy);
+        glVertex2f(cx - r - 1, cy);
+        glVertex2f(cx - r - 1, cy);
+        glVertex2f(-1 -r/2 + cx, -1 -r * cos(PI/6) + cy);
+        glVertex2f(-1 -r/2 + cx, -1 -r * cos(PI/6) + cy);
+        glVertex2f(r/2 + cx + 1, -1 -r * cos(PI/6) + cy);
+    glEnd();
+
+}
+
+void Display()
+{
+    glLoadIdentity();
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glOrtho(0.0, width, height, 0.0, 0.f, -1.f);
+    glPushMatrix();
+        drawHex(200, 200, 100);
+    glPopMatrix();
+    glutSwapBuffers();
+}
+
+void Keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 27:
+        exit(0);
+        break;
+    }
+}
+
+int main(int argc, char **argv)
+{
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+    glutCreateWindow("ds");
+    glutReshapeFunc(Reshape);
+
+    glutDisplayFunc(Display);
+    glutKeyboardFunc(Keyboard);
+    glutFullScreen();
+
+    glutMainLoop();
+
+    return 0;
+}
+
