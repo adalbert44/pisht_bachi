@@ -1,21 +1,19 @@
-/*
-Тут всі інклуди , дефайни і темплейти
-*/
 #ifndef MAIN_HEAD_H_INCLUDED
 
     #define MAIN_HEAD_H_INCLUDED
 
+    #pragma once
+
     #include <GL/glut.h>
     #include <IL/ilut.h>
     #include <bits/stdc++.h>
+    #include "global_vars.h"
 
     #define INF 1e9
     #define pb push_back
     #define mp make_pair
     #define fi first
     #define se second
-    #define x first
-    #define y second
     #define I "%d"
     #define II "%d%d"
     #define III "%d%d%d"
@@ -23,7 +21,7 @@
 
     using namespace std;
 
-    typedef GLuint Sprite;  //GLuint - номер текстури
+    typedef GLuint Sprite;
     typedef vector<int> vi;
     typedef pair <int, int> pii;
     typedef vector<pii> vii;
@@ -38,7 +36,26 @@
         return x*x;
     }
 
+    enum Relief
+    {
+        EMPTY,
+        RIVER,
+        MOUNTAIN
+    };
+
+    enum Country
+    {
+        France,
+        Germany,
+        Ukraine,
+        Russia,
+        USA,
+        England
+    };
+
 #endif // MAIN_HEAD_H_INCLUDED
 
+/*
+Тут всі інклуди , дефайни і темплейти
+*/
 
-// TODO: reference additional headers your program requires here
