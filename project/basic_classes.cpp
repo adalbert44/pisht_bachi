@@ -1,31 +1,12 @@
-// тут усі базові класи,окрім класу гри
-//
-
 #include "all_includes.h"
+#include "basic_classes.h"
 
-vector<string> name[200], fort_sprite(200);
+
+///Ініціалізація глобальних змінних
+std::vector<std::string> name[200];
+std::vector<GLuint> fort_sprite(200);
 int used_generals[200];
-map <string, string> general_sprite;
-
-/// метод для генерації масиву генералів певної нації
-void init()
-{
-	freopen("generals.dat", "r", stdin);
-	for (int i = 0; i < 6; i++)
-	{
-		int n;
-		cin >> n;
-		for (int j = 0; j < n; j++)
-		{
-			string s, t;
-			cin >> s;
-			name[i].pb(s);
-			cin >> t;
-			general_sprite[s] = t;
-		}
-		random_shuffle(name[i].begin(), name[i].end());
-	}
-}
+std::map <std::string, GLuint> general_sprite;
 
 /// метод для генерації наступного генерала із списку
 string new_name(int color)
@@ -34,96 +15,51 @@ string new_name(int color)
 }
 
 /// клас міста
-class Town
+Town :: Town(int x, int y, int color)
 {
-public:
-	int x, y, color;
-	Sprite sprite;
-
-	// конструктор міста від координат клітинки та кольору нації
-	Town(int x, int y, int color)
-	{
-	    this->x = x;
-	    this->y = y;
-        this->color = color;
-        this->sprite = fort_sprite[color];
-	}
-};
+    this->x = x;
+    this->y = y;
+    this->color = color;
+    this->sprite = fort_sprite[color];
+}
 
 /// клас генерала
-class General
+General::General(Town town)
 {
-public:
-	int x, y, color, turns_left;
-	string name;
-	Sprite sprite;
-
-	// конструктор від рідного міста генерала
-	General(Town town)
-	{
-		this->x = town.x;
-		this->y = town.y;
-		this->color = town.color;
-		this->name = new_name(color);
-		this->sprite = general_sprite[this->name];
-		this->turns_left = 2;
-	}
-};
+    this->x = town.x;
+    this->y = town.y;
+    this->color = town.color;
+    this->name = new_name(color);
+    this->sprite = general_sprite[this->name];
+    this->turns_left = 2;
+}
 
 /// клас фортеці
-class Fort
+Fort::Fort(General gen)
 {
-public:
-	int x, y, color;
-	Sprite sprite;
-
-	// конструктор від генерала, який побудував фортецю
-	Fort(General gen)
-	{
-		this->x = gen.x;
-		this->y = gen.y;
-		this->color = gen.color;
-		this->sprite = fort_sprite[this->color];
-		// TODO: знищувати генерала після побудови фортеці
-	}
+    this->x = gen.x;
+    this->y = gen.y;
+    this->color = gen.color;
+    this->sprite = fort_sprite[this->color];
+    // TODO: знищувати генерала після побудови фортеці
+}
 	// конструктор від координат клітинки та кольору нації
-	Fort(int x, int y, int color)
-	{
-		this->x = x;
-		this->y = y;
-		this->color = color;
-		this->sprite = fort_sprite[color];
-	}
-};
+Fort::Fort(int x, int y, int color)
+{
+    this->x = x;
+    this->y = y;
+    this->color = color;
+    this->sprite = fort_sprite[color];
+}
 
 /// клас клітинки
 
-enum Relief
+
+Cell::Cell()
 {
-    EMPTY,
-    RIVER,
-    MOUNTAIN
-};
-
-class Cell
-{
-public:
-	int color;
-	General *general;
-	Fort *fort;
-	Town *town;
-	Relief relief;
-
-
-	// автоматичний конструктор пустої клітинки
-	Cell()
-	{
-	    this->color = 0;
-	    this->general = NULL;
-        this->fort = NULL;
-        this->town = NULL;
-        this->relief = EMPTY;
-	}
-};
-
-
+    this->color = 0;
+    this->general = NULL;
+    this->fort = NULL;
+    this->town = NULL;
+    this->relief = EMPTY;
+}
